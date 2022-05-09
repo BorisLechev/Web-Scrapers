@@ -14,7 +14,7 @@ var properties = await gather.GatherDataAsync(10, 1000);
 //   JsonConvert.SerializeObject(properties, Formatting.Indented));
 
 //using var csvWriter = new CsvWriter(new StreamWriter(File.OpenWrite($"imot.bg-raw-data-{DateTime.Now:yyyy-MM-dd}.csv"), Encoding.UTF8), CultureInfo.CurrentCulture);
-//csvWriter.WriteRecords(properties);
+//await csvWriter.WriteRecordsAsync(properties);
 
 // 13657 records in imot.bg-2022-04-25.csv
 //var filteredProperties = properties
