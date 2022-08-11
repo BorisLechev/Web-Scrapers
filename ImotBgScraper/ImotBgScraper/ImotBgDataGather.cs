@@ -54,18 +54,22 @@
                         var adDetailsHtmlWithEncoding = Encoding.GetEncoding("windows-1251").GetString(adDetailBytesArray); // document.characterSet -> windows-1251
 
                         var adDetailsDocument = await parser.ParseDocumentAsync(adDetailsHtmlWithEncoding);
-                        var district = adDetailsDocument
+                        var location = adDetailsDocument
                             .QuerySelector(".location")
                             .InnerHtml
                             ?.Trim();
 
                         // Input: град София, Банишора, ул. Сливен
                         // Output: град София, Банишора
-                        if (district?.Contains("<span style=\"font-size:12px;\">") == true)
+                        if (location?.Contains("<span style=\"font-size:12px;\">") == true)
                         {
-                            var indexOfBr = district.IndexOf(", <span style=\"font-size:12px;\">", StringComparison.InvariantCulture);
-                            district = district.Substring(0, indexOfBr).Trim();
+                            var indexOfBr = location.IndexOf(", <span style=\"font-size:12px;\">", StringComparison.InvariantCulture);
+                            location = location.Substring(0, indexOfBr).Trim();
                         }
+
+                        var splittedLocation = location.Split(", ", StringSplitOptions.RemoveEmptyEntries);
+                        var town = splittedLocation[0];
+                        var district = splittedLocation[1];
 
                         var floorsRegex = new Regex(@"^(?<floor>[0-9]+)[^\d]+(?<totalFloors>[0-9]+)$", RegexOptions.Compiled); // 12-ти от 18
                         var buildingTypeAndYearRegex = new Regex(@"^(?<buildingType>[^,]+)([,\s]+(?<year>\d+))?", RegexOptions.Compiled); // Тухла, 2023 г.
@@ -88,6 +92,7 @@
                             Url = adUrl,
                             Size = size,
                             YardSize = yardSize,
+                            Town = town,
                             District = district,
                             Floor = floorMatch.Success
                                     ? floorMatch.Groups["floor"].Value.ToInteger()

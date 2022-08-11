@@ -10,6 +10,8 @@
 
         public int Price { get; set; }
 
+        public string Town { get; set; }
+
         public string District { get; set; }
 
         public int Floor { get; set; }
