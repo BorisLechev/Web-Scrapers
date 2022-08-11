@@ -21,7 +21,7 @@
                 Console.Write($"Area ${size}: ");
 
                 // F12 -> Network tab -> imot.cgi -> Payload tab -> Form Data
-                var formDataFlats = $"act=3&rub=1&rub_pub_save=1&topmenu=2&actions=1&f0=127.0.0.1&f1=1&f2=&f3=&f4=1&f7=1%7E2%7E3%7E4%7E5%7E6%7E8%7E&f28=&f29=&f43=&f44=&f30=EUR&f26={size}&f27={size}&f41=1&f31=&f32=&f38=%E3%F0%E0%E4+%D1%EE%F4%E8%FF&f42=&f39=&f40=&fe3=&fe4=&f45=&f46=&f51=&f52=&f33=&f34=&f35=&f36=&f37=&fe2=1";
+                var formDataFlats = $"act=3&rub=1&rub_pub_save=1&topmenu=2&actions=1&f0=127.0.0.1&f1=1&f2=&f3=&f4=1&f7=1%7E2%7E3%7E4%7E5%7E6%7E8%7E&f28=&f29=&f43=&f44=&f30=EUR&f26={size}&f27={size}&f41=1&f31=&f32=&f54=&f38=%E3%F0%E0%E4+%D1%EE%F4%E8%FF&f42=&f39=&f40=&fe3=&fe4=&f45=&f46=&f51=&f52=&f33=&f34=&f35=&f36=&f37=&fe2=1";
                 var formDataHouses = $"act=3&rub=1&rub_pub_save=1&topmenu=2&actions=1&f0=127.0.0.1&f1=1&f2=&f3=&f4=1&f7=10~&f28=&f29=&f43=&f44=&f30=EUR&f26={size}&f27={size}&f41=1&f31=&f32=&f38=&f42=&f39=&f40=&f3=&fe4=&f45=&f46=&f51=&f52=&f33=&f34=&f35=&f36=&f37=&fe2=1";
 
                 var response = await httpClient.PostAsync(
@@ -54,15 +54,16 @@
                         var adDetailsHtmlWithEncoding = Encoding.GetEncoding("windows-1251").GetString(adDetailBytesArray); // document.characterSet -> windows-1251
 
                         var adDetailsDocument = await parser.ParseDocumentAsync(adDetailsHtmlWithEncoding);
-                        var district = adDetailsHtmlWithEncoding
-                            .GetStringBetween("<span style=\"font-size:14px; margin:8px 0; display:inline-block\">", "</span>")
+                        var district = adDetailsDocument
+                            .QuerySelector(".location")
+                            .InnerHtml
                             ?.Trim();
 
                         // Input: град София, Банишора, ул. Сливен
                         // Output: град София, Банишора
-                        if (district?.Contains("<br>") == true)
+                        if (district?.Contains("<span style=\"font-size:12px;\">") == true)
                         {
-                            var indexOfBr = district.IndexOf("<br>", StringComparison.InvariantCulture);
+                            var indexOfBr = district.IndexOf(", <span style=\"font-size:12px;\">", StringComparison.InvariantCulture);
                             district = district.Substring(0, indexOfBr).Trim();
                         }
 
@@ -70,11 +71,11 @@
                         var buildingTypeAndYearRegex = new Regex(@"^(?<buildingType>[^,]+)([,\s]+(?<year>\d+))?", RegexOptions.Compiled); // Тухла, 2023 г.
 
                         var floorInfoString = adDetailsHtmlWithEncoding
-                            .GetStringBetween("<li>Етаж:</li><li>", "</li>")
+                            .GetStringBetween("<div>Етаж: <strong>", "</strong></div>")
                             .Replace("Партер", "1");
                         var floorMatch = floorsRegex.Match(floorInfoString);
                         var buildingTypeAndYearString = adDetailsHtmlWithEncoding
-                            .GetStringBetween("<li>Строителство:</li><li>", "</li>");
+                            .GetStringBetween("<div>Строителство: <strong>", "</strong></div>");
                         var buildingTypeMatch = buildingTypeAndYearRegex.Match(buildingTypeAndYearString);
                         var yardSizeString = adDetailsHtmlWithEncoding
                             .GetStringBetween("<li>Двор:</li><li>", "</li>")
@@ -95,7 +96,7 @@
                                         ? floorMatch.Groups["totalFloors"].Value.ToInteger()
                                         : 0,
                             Price = adDetailsDocument
-                                    .QuerySelector("span#cena")?.TextContent
+                                    .QuerySelector("div.pricePhoto")?.TextContent
                                     ?.Replace(" EUR", string.Empty)
                                     ?.ToInteger()
                                     ?? 0,
