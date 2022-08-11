@@ -6,8 +6,8 @@ using System.Globalization;
 using System.Text;
 
 var gather = new ImotBgDataGather();
-var properties = await gather.GatherDataAsync(10, 1000);
-
+var propertiesFromSofia = await gather.GatherDataAsync(10, 1000, "%D1%EE%F4%E8%FF");
+var propertiesFromVarna = await gather.GatherDataAsync(10, 1000, "%C2%E0%F0%ED%E0");
 // 17341 records in imot.bg-raw-data-2022-04-25.csv
 //File.WriteAllText(
 //   $"imot.bg-raw-data-{DateTime.Now:yyyy-MM-dd}.json",

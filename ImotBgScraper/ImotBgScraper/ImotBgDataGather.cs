@@ -8,7 +8,7 @@
     {
         private string baseUrl = "https://www.imot.bg/pcgi/imot.cgi";
 
-        public async Task<IEnumerable<Property>> GatherDataAsync(int fromSize, int toSize)
+        public async Task<IEnumerable<Property>> GatherDataAsync(int fromSize, int toSize, string townCode)
         {
             var properties = new List<Property>();
 
@@ -21,7 +21,7 @@
                 Console.Write($"Area ${size}: ");
 
                 // F12 -> Network tab -> imot.cgi -> Payload tab -> Form Data
-                var formDataFlats = $"act=3&rub=1&rub_pub_save=1&topmenu=2&actions=1&f0=127.0.0.1&f1=1&f2=&f3=&f4=1&f7=1%7E2%7E3%7E4%7E5%7E6%7E8%7E&f28=&f29=&f43=&f44=&f30=EUR&f26={size}&f27={size}&f41=1&f31=&f32=&f54=&f38=%E3%F0%E0%E4+%D1%EE%F4%E8%FF&f42=&f39=&f40=&fe3=&fe4=&f45=&f46=&f51=&f52=&f33=&f34=&f35=&f36=&f37=&fe2=1";
+                var formDataFlats = $"act=3&rub=1&rub_pub_save=1&topmenu=2&actions=1&f0=127.0.0.1&f1=1&f2=&f3=&f4=1&f7=1%7E2%7E3%7E4%7E5%7E6%7E8%7E&f28=&f29=&f43=&f44=&f30=EUR&f26={size}&f27={size}&f41=1&f31=&f32=&f54=&f38=%E3%F0%E0%E4+{townCode}&f42=&f39=&f40=&fe3=&fe4=&f45=&f46=&f51=&f52=&f33=&f34=&f35=&f36=&f37=&fe2=1";
                 var formDataHouses = $"act=3&rub=1&rub_pub_save=1&topmenu=2&actions=1&f0=127.0.0.1&f1=1&f2=&f3=&f4=1&f7=10~&f28=&f29=&f43=&f44=&f30=EUR&f26={size}&f27={size}&f41=1&f31=&f32=&f38=&f42=&f39=&f40=&f3=&fe4=&f45=&f46=&f51=&f52=&f33=&f34=&f35=&f36=&f37=&fe2=1";
 
                 var response = await httpClient.PostAsync(
